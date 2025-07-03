@@ -1,0 +1,254 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --sunset-orange: #ff6b00;
+  --dark-orange: #cc4a00;
+  --burnt-orange: #e55a00;
+  --bright-orange: #ff7a1a;
+  --light-orange: #ff8a33;
+  --pale-orange: #ff9a4d;
+  --sunset-red: #f7931e;
+  --dark-green: #3a4a35;
+  --dark-olive-green: #4a5a42;
+  --olive-green: #5a6b4f;
+  --medium-olive-green: #6b7c5c;
+  --light-sage-green: #7c8d69;
+  --pale-olive-green: #8d9e76;
+  --metal-gray: #8e9aaf;
+  --metal-light: #cfd2dc;
+  --industrial-blue: #264653;
+}
+
+/* SunSet Metal Forming Brand Colors */
+.text-sunset-orange {
+  color: var(--sunset-orange);
+}
+.text-bright-orange {
+  color: var(--bright-orange);
+}
+.text-sunset-red {
+  color: var(--sunset-red);
+}
+.text-dark-green {
+  color: var(--dark-green);
+}
+.text-olive-green {
+  color: var(--olive-green);
+}
+.text-metal-gray {
+  color: var(--metal-gray);
+}
+.text-metal-light {
+  color: var(--metal-light);
+}
+.text-industrial-blue {
+  color: var(--industrial-blue);
+}
+
+.bg-sunset-orange {
+  background-color: var(--sunset-orange);
+}
+.bg-bright-orange {
+  color: var(--bright-orange);
+}
+.bg-sunset-red {
+  background-color: var(--sunset-red);
+}
+.bg-dark-green {
+  background-color: var(--dark-green);
+}
+.bg-olive-green {
+  background-color: var(--olive-green);
+}
+.bg-metal-gray {
+  background-color: var(--metal-gray);
+}
+.bg-metal-light {
+  background-color: var(--metal-light);
+}
+.bg-industrial-blue {
+  background-color: var(--industrial-blue);
+}
+
+.gradient-sunset {
+  background: linear-gradient(
+    135deg,
+    var(--sunset-orange) 0%,
+    var(--sunset-red) 100%
+  );
+}
+
+.gradient-metal {
+  background: linear-gradient(
+    135deg,
+    var(--metal-gray) 0%,
+    var(--metal-light) 100%
+  );
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Glass morphism utilities */
+.glass {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-strong {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Enhanced dropdown animations */
+.dropdown-enter {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+}
+
+.dropdown-enter-active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: all 300ms ease-out;
+}
+
+.dropdown-exit {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.dropdown-exit-active {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+  transition: all 200ms ease-in;
+}
+
+/* Custom scrollbar for mobile menu */
+.mobile-menu-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.mobile-menu-scroll::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+}
+
+.mobile-menu-scroll::-webkit-scrollbar-thumb {
+  background: var(--sunset-orange);
+  border-radius: 2px;
+}
+
+.mobile-menu-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--sunset-red);
+}
+
+/* Video background styles */
+.video-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+}
+
+/* 3D Model Viewer Styles */
+model-viewer {
+  width: 100%;
+  height: 400px;
+  background-color: transparent;
+}
+
+/* Enhanced hover effects */
+.hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Smooth focus rings */
+.focus-ring {
+  transition: all 0.2s ease;
+}
+
+.focus-ring:focus {
+  outline: 2px solid var(--sunset-orange);
+  outline-offset: 2px;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--metal-light);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--sunset-orange);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--sunset-red);
+}
+
+/* Backdrop blur support for older browsers */
+@supports not (backdrop-filter: blur(10px)) {
+  .glass,
+  .glass-strong {
+    background: rgba(255, 255, 255, 0.95);
+  }
+}
+
+/* Enhanced animations */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+.animate-slide-down {
+  animation: slideDown 0.3s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.2s ease-in;
+}
