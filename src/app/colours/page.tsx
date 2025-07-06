@@ -66,9 +66,9 @@ export default function Colours() {
                       // }}
                     />
                     {image.title && (
-                      <div className="text-right absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-75 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="text-center text-[#ff7a1a] absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-75 group-hover:opacity-100 transition-opacity duration-300">
                         <div className="absolute bottom-4 left-4 right-4">
-                          <h3 className="text-white font-semibold text-3xl md:text-5xl">
+                          <h3 className="text-[#ff7a1a] t font-semibold text-3xl md:text-5xl">
                             {image.title}
                           </h3>
                         </div>

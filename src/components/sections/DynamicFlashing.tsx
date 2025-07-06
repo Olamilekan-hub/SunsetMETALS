@@ -12,14 +12,14 @@
   const FlashItem = ({ item, index = 0 }: { item: FlashItemType; index?: number }) => {
     
     return (
-      <section className="bg-[#8D9E76] pt-12 pb-6 bg-cover bg-center bg-no-repeat w-full ">
+      <section className="bg-[#8D9E76] py-6 bg-cover bg-center bg-no-repeat w-full ">
         {index > 0 && <div className="border-6 border-gray-200 my-6"></div>}
         
-        <div className={`flex flex-col items-center justify-between lg:flex-row -gap8 md:gap- md:py-10 lg:py-20 px-5 md:px-25 lg:px-60 text-white w-full`}>
+        <div className={`md:max-w-[60%] mx-auto flex flex-col items-center justify-between lg:flex-row py-2  text-white w-full`}>
           
           {/* Text Section */}
           <div className="flex flex-col w-full pr- ">
-            <h2 className='text-3xl md:text-4xl lg:text-6xl font-bold text-white mb-4 uppercase'>
+            <h2 className='text-2xl md:text-3xl lg:text-5xl font-bold text-white mb- uppercase'>
               {item.title}
             </h2>
             <p className="text-sm md:text-md lg:text-lg text-sunset-800 leading-relaxed">
@@ -29,12 +29,12 @@
 
           {/* Images Section */}
               {item.images && item.images.map((image, imgIndex) => (
-              <div key={imgIndex} className="w-full">
+              <div key={imgIndex} className="w-full ml-3">
                   <Image 
                   src={image.src} 
                   alt={image.alt || `${item.title} image ${imgIndex + 1}`} 
-                  width={500} 
-                  height={image.height || 200} 
+                  width={350} 
+                  height={image.height || 100} 
                   className="shadow-lg object-cover rounded-lg bg-[#3A4A35]/40"
                   priority={imgIndex === 0}
                   style={{

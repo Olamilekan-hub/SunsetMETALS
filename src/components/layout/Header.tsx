@@ -11,18 +11,19 @@ import HeaderSearchBar from "../ui/HeaderSearchBar";
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const [activeSubDropdown, setActiveSubDropdown] = useState<string | null>(
-    null
-  );
+  const [activeSubDropdown, setActiveSubDropdown] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
 
+  const openTimeout = useRef<NodeJS.Timeout | null>(null);
   const closeTimeout = useRef<NodeJS.Timeout | null>(null);
+  const subOpenTimeout = useRef<NodeJS.Timeout | null>(null);
+  const subCloseTimeout = useRef<NodeJS.Timeout | null>(null);
   
   // Handle scroll effect for glass morphism
   useEffect(() => {
     const handleScroll = () => {
       const scrolled = window.scrollY > 20;
-      setIsScrolled();
+      setIsScrolled(scrolled);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -35,6 +36,61 @@ const Header: React.FC = () => {
     setActiveDropdown(activeDropdown === label ? null : label);
   };
 
+  // Clear all timeouts
+  const clearAllTimeouts = () => {
+    if (openTimeout.current) clearTimeout(openTimeout.current);
+    if (closeTimeout.current) clearTimeout(closeTimeout.current);
+    if (subOpenTimeout.current) clearTimeout(subOpenTimeout.current);
+    if (subCloseTimeout.current) clearTimeout(subCloseTimeout.current);
+  };
+
+  // Handle main dropdown mouse enter
+  const handleMainDropdownEnter = (label: string, hasChildren: boolean) => {
+    if (!hasChildren) return;
+    
+    clearAllTimeouts();
+    
+    // Small delay to open dropdown to prevent accidental triggers
+    openTimeout.current = setTimeout(() => {
+      setActiveDropdown(label);
+      setActiveSubDropdown(null);
+    }, 150);
+  };
+
+  // Handle main dropdown mouse leave
+  const handleMainDropdownLeave = () => {
+    clearAllTimeouts();
+    
+    // Longer delay to close, giving user time to move to dropdown
+    closeTimeout.current = setTimeout(() => {
+      setActiveDropdown(null);
+      setActiveSubDropdown(null);
+    }, 300);
+  };
+
+  // Handle sub dropdown mouse enter
+  const handleSubDropdownEnter = (label: string) => {
+    clearAllTimeouts();
+    
+    subOpenTimeout.current = setTimeout(() => {
+      setActiveSubDropdown(label);
+    }, 100);
+  };
+
+  // Handle sub dropdown mouse leave
+  const handleSubDropdownLeave = () => {
+    clearAllTimeouts();
+    
+    subCloseTimeout.current = setTimeout(() => {
+      setActiveSubDropdown(null);
+    }, 200);
+  };
+
+  // Handle dropdown area mouse enter (keep dropdown open)
+  const handleDropdownAreaEnter = () => {
+    clearAllTimeouts();
+  };
+
   const renderNavigationItem = (item: NavigationItem, level: number = 0) => {
     const hasChildren = item.children && item.children.length > 0;
 
@@ -42,6 +98,16 @@ const Header: React.FC = () => {
       <div
         key={item.label}
         className={`relative ${level === 0 ? "group" : ""}`}
+        onMouseEnter={() => {
+          if (level === 0) {
+            handleMainDropdownEnter(item.label, hasChildren);
+          }
+        }}
+        onMouseLeave={() => {
+          if (level === 0) {
+            handleMainDropdownLeave();
+          }
+        }}
       >
         <Link
           href={item.href}
@@ -51,56 +117,41 @@ const Header: React.FC = () => {
             ${level > 0 ? "pl-6" : ""}
             hover:bg-gray-50/50 rounded-md
           `}
-          onMouseEnter={() => {
-            if (level === 0 && hasChildren) {
-              closeTimeout.current = setTimeout(() => {
-                setActiveDropdown(item.label);
-                setActiveSubDropdown(null);
-              }, 5000); 
-            }
-          }}
         >
           {item.label}
           {hasChildren && (
             <ChevronDown
               className={`w-4 h-4 transition-transform duration-200 ${
-                level === 0 ? "group-hover:rotate-180" : ""
+                activeDropdown === item.label ? "rotate-180" : ""
               }`}
             />
           )}
         </Link>
 
         {/* First level dropdown */}
-        {hasChildren && level === 0 && (
+        {hasChildren && level === 0 && activeDropdown === item.label && (
           <div
             className={`
-              absolute left-0 top-full mt-2 bg-white/95 backdrop-blur-md shadow-xl border border-gray-200/50 rounded-xl z-50 min-w-56
-              opacity-0 invisible group-hover:opacity-100 group-hover:visible
-              transform translate-y-2 group-hover:translate-y-0
-              transition-all duration-300 ease-out
+              absolute left-0 top-full mt-1 bg-white/95 backdrop-blur-md shadow-xl border border-gray-200/50 rounded-xl z-50 min-w-56
+              opacity-100 visible transform translate-y-0
+              transition-all duration-200 ease-out
             `}
-            onMouseEnter={() => {
-              setActiveDropdown(item.label);
-            }}
-            onMouseLeave={() => {
-              closeTimeout.current = setTimeout(() => {
-                setActiveDropdown(null);
-                setActiveSubDropdown(null);
-              }, 5000);
-            }}
+            onMouseEnter={handleDropdownAreaEnter}
+            onMouseLeave={handleMainDropdownLeave}
           >
             {item.children?.map((child) => (
               <div
                 key={child.label}
-                className="relative group/child"
+                className="relative"
                 onMouseEnter={() => {
-                  setActiveSubDropdown(child.label);
-                  if (closeTimeout.current) clearTimeout(closeTimeout.current);
+                  if (child.children) {
+                    handleSubDropdownEnter(child.label);
+                  }
                 }}
                 onMouseLeave={() => {
-                  closeTimeout.current = setTimeout(() => {
-                    setActiveSubDropdown(null);
-                  }, 5000); // slight delay so user can move into the grandchild box
+                  if (child.children) {
+                    handleSubDropdownLeave();
+                  }
                 }}
               >
                 <Link
@@ -116,16 +167,9 @@ const Header: React.FC = () => {
                 {/* Grandchild dropdown */}
                 {child.children && activeSubDropdown === child.label && (
                   <div
-                    className="absolute left-full top-0 ml-2 bg-white/95 backdrop-blur-md shadow-xl border border-gray-200/50 rounded-xl min-w-48 z-60"
-                    onMouseEnter={() => {
-                      if (closeTimeout.current)
-                        clearTimeout(closeTimeout.current);
-                    }}
-                    onMouseLeave={() => {
-                      closeTimeout.current = setTimeout(() => {
-                        setActiveSubDropdown(null);
-                      }, 5000);
-                    }}
+                    className="absolute left-full top-0 ml-1 bg-white/95 backdrop-blur-md shadow-xl border border-gray-200/50 rounded-xl min-w-48 z-60"
+                    onMouseEnter={handleDropdownAreaEnter}
+                    onMouseLeave={handleSubDropdownLeave}
                   >
                     {child.children.map((grandchild) => (
                       <Link
@@ -181,7 +225,7 @@ const Header: React.FC = () => {
         sticky top-0 z-40 py-4 transition-all duration-300
         ${
           isScrolled
-            ? "bg-gray-300/50 backdrop-blur-md shadow-lg border-b border-gray-200/50"
+            ? "bg-gray-200 backdrop-blur-md shadow-lg border-b border-gray-200"
             : "bg-gray-200 shadow-md"
         }
       `}
@@ -191,9 +235,9 @@ const Header: React.FC = () => {
             {/* Logo */}
             <Link
               href="/"
-              className="flex items-center gap-3 hover:opacity-90 transition-opacity"
+              className={`flex items-center gap-3 transition-all duration-300 ${isScrolled ? "hover:scale-105" : "hover:opacity-90"}`}
             >
-              <div className="lg:w-24 w-18 pl-2">
+              <div className={`transition-all duration-300 ${isScrolled ? "lg:w-28 w-20 scale-110" : "lg:w-24 w-18"} pl-2`}>
                 <Image
                   src="/logo_for_sm_1.png"
                   alt="SunSet Metal Forming Logo"
@@ -207,12 +251,12 @@ const Header: React.FC = () => {
                 flex flex-col items-center text-center gap-1 transition-all duration-300
                 ${
                   isScrolled
-                    ? "opacity-0 invisible transform scale-95"
-                    : "opacity-100 visible transform scale-100"
+                    ? "transform scale-110"
+                    : "transform scale-100"
                 }
               `}
               >
-                <div className="w-60 lg:w-80">
+                <div className={`transition-all duration-300 ${isScrolled ? "w-72 lg:w-96" : "w-60 lg:w-80"}`}>
                   <Image
                     src="/New_Project_3.png"
                     alt="SunSet Metal Forming"
@@ -221,7 +265,7 @@ const Header: React.FC = () => {
                     className="object-contain"
                   />
                 </div>
-                <em className="text-xs lg:text-sm text-gray-600 font-medium tracking-wide">
+                <em className={`transition-all duration-300 text-gray-600 font-medium tracking-wide ${isScrolled ? "text-sm lg:text-base" : "text-xs lg:text-sm"}`}>
                   {companyInfo.tagline}
                 </em>
               </div>
@@ -231,16 +275,6 @@ const Header: React.FC = () => {
             <nav className="hidden lg:flex items-center space-x-2">
               {navigationItems.map((item) => renderNavigationItem(item))}
             </nav>
-
-            {/* CTA Button */}
-            {/* <div className="hidden md:block">
-              <Link
-                href="/quote"
-                className="bg-gradient-to-r from-sunset-orange to-sunset-red text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300 transform"
-              >
-                Get Quote
-              </Link>
-            </div> */}
 
             {/* Mobile Menu Button */}
             <button

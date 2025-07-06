@@ -63,6 +63,25 @@ export default function GalleryPage() {
         </div>
       </div>
       </section>
+
+      {/* Video Section */}
+      <section className="bg-[#8D9E76] py-6">
+        <div className="max-w-[80vw] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative aspect-video overflow-hidden rounded-lg shadow-lg">
+            <video
+              className="w-full h-full object-cover"
+              autoPlay
+              muted
+              loop
+              playsInline
+              controls
+            >
+              <source src="/videos/Untitled 1.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
